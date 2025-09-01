@@ -1,7 +1,7 @@
 import { desc } from "drizzle-orm";
 import Image from "next/image";
 
-//import Footer from "@/components/common/footer";
+import Footer from "@/components/ui/common/footer";
 import { Header } from "@/components/ui/common/header";
 import ProductList from "@/components/ui/common/product-list";
 import { db } from "@/db";
@@ -55,6 +55,7 @@ const Home = async () => {
         </div>
 
         <ProductList products={newlyCreatedProducts} title="Novos produtos" />
+        <Footer />
       </div>
     </>
   );
