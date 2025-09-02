@@ -7,6 +7,7 @@ import ProductList from "@/components/ui/common/product-list";
 import { db } from "@/db";
 import { productTable } from "@/db/schema";
 import CategorySelector from "@/components/ui/common/category-selector";
+import { PartnersList } from "@/components/ui/common/partners-list";
 
 const Home = async () => {
   const products = await db.query.productTable.findMany({
@@ -35,6 +36,10 @@ const Home = async () => {
             sizes="100vw"
             className="h-auto w-full"
           />
+        </div>
+
+        <div className="space-y-10">
+          <PartnersList />
         </div>
 
         <ProductList products={products} title="Mais vendidos" />

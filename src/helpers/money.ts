@@ -1,6 +1,7 @@
-export const formatCentsToBRL = (cents: number) => {
-  return new Intl.NumberFormat("pt-BR", {
+// src/helpers/money.ts
+export const formatCentsToEUR = (cents: number) => {
+  return new Intl.NumberFormat("pt-PT", {
     style: "currency",
-    currency: "BRL",
+    currency: "EUR",
   }).format(cents / 100);
 };
