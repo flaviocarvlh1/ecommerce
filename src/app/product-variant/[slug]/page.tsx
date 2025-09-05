@@ -1,17 +1,14 @@
-// app/product-variant/[slug]/page.tsx
 import { eq } from "drizzle-orm";
 import Image from "next/image";
-import { notFound } from "next/navigation";
-
 import { Header } from "@/components/ui/common/header";
 import Footer from "@/components/ui/common/footer";
 import ProductList from "@/components/ui/common/product-list";
 import { db } from "@/db";
 import { productTable, productVariantTable } from "@/db/schema";
 import { formatCentsToEUR } from "@/helpers/money";
-
-//import ProductActions from "./components/product-actions";
-//import VariantSelector from "./components/variant-selector";
+import { Button } from "@/components/ui/button";
+import VariantSelector from "./compoments/variant-selector";
+import QuantitySelector from "./compoments/quantity-selector";
 
 interface ProductVariantPageProps {
   params: { slug: string };
@@ -52,7 +49,7 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
   return (
     <>
       <Header />
-      <div className="flex flex-col space-y-6 px-5">
+      <div className="flex flex-col space-y-6">
         <Image
           src={productVariant.imageUrl}
           alt={productVariant.name}
@@ -62,7 +59,14 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
           className="h-auto w-full object-cover"
         />
 
-        <div>
+        <div className="px-5">
+          <VariantSelector
+            selectedVariantSlug={productVariant.slug}
+            variants={productVariant.product.variants}
+          />
+        </div>
+
+        <div className="px-5">
           <h2 className="text-lg font-semibold">
             {productVariant.product.name}
           </h2>
@@ -73,17 +77,29 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
             {formatCentsToEUR(productVariant.priceInCents)}
           </h3>
         </div>
+        <div className="px-5">
+          <QuantitySelector />
+        </div>
+        <div className="flex flex-col space-y-4 px-5">
+          {/*botoes*/}
+          <Button className="rounded-full" size="lg" variant="outline">
+            Adicionar a Sacola
+          </Button>
+          <Button className="rounded-full" size="lg">
+            Comprar Agora
+          </Button>
+        </div>
 
-        <div>
+        <div className="px-5">
           <p className="text-shadow-amber-600">
             {productVariant.product.description}
           </p>
         </div>
 
         <ProductList title="Talvez você goste" products={likelyProducts} />
-
-        <Footer />
       </div>
+
+      <Footer />
     </>
   );
 };
