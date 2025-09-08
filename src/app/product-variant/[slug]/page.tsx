@@ -1,22 +1,23 @@
 import { eq } from "drizzle-orm";
 import Image from "next/image";
-import { Header } from "@/components/ui/common/header";
+import { notFound } from "next/navigation";
+
 import Footer from "@/components/ui/common/footer";
+import { Header } from "@/components/ui/common/header";
 import ProductList from "@/components/ui/common/product-list";
 import { db } from "@/db";
 import { productTable, productVariantTable } from "@/db/schema";
 import { formatCentsToEUR } from "@/helpers/money";
-import { Button } from "@/components/ui/button";
+
+import ProductActions from "./compoments/product-actions";
 import VariantSelector from "./compoments/variant-selector";
-import QuantitySelector from "./compoments/quantity-selector";
 
 interface ProductVariantPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
-  const { slug } = params;
-
+  const { slug } = await params;
   const productVariant = await db.query.productVariantTable.findFirst({
     where: eq(productVariantTable.slug, slug),
     with: {
@@ -27,25 +28,15 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
       },
     },
   });
-
   if (!productVariant) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center">
-        <Header />
-        <h1 className="mb-4 text-2xl font-bold">Produto não encontrado</h1>
-        <p className="text-muted-foreground">
-          Verifique se o link está correto ou volte para a loja.
-        </p>
-        <Footer />
-      </div>
-    );
+    return notFound();
   }
-
   const likelyProducts = await db.query.productTable.findMany({
     where: eq(productTable.categoryId, productVariant.product.categoryId),
-    with: { variants: true },
+    with: {
+      variants: true,
+    },
   });
-
   return (
     <>
       <Header />
@@ -67,6 +58,7 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
         </div>
 
         <div className="px-5">
+          {/* DESCRIÇÃO */}
           <h2 className="text-lg font-semibold">
             {productVariant.product.name}
           </h2>
@@ -77,17 +69,8 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
             {formatCentsToEUR(productVariant.priceInCents)}
           </h3>
         </div>
-        <div className="px-5">
-          <QuantitySelector />
-        </div>
-        <div className="flex flex-col space-y-4 px-5">
-          <Button className="rounded-full" size="lg" variant="outline">
-            Adicionar a Sacola
-          </Button>
-          <Button className="rounded-full" size="lg">
-            Comprar Agora
-          </Button>
-        </div>
+
+        <ProductActions productVariantId={productVariant.id} />
 
         <div className="px-5">
           <p className="text-shadow-amber-600">
@@ -96,9 +79,9 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
         </div>
 
         <ProductList title="Talvez você goste" products={likelyProducts} />
-      </div>
 
-      <Footer />
+        <Footer />
+      </div>
     </>
   );
 };
