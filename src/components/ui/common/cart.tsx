@@ -18,12 +18,10 @@ import { formatCentsToEUR } from "@/helpers/money";
 import CartItem from "./cart-item";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { Separator } from "@radix-ui/react-separator";
+import { useCart } from "@/action/hooks/queries/use-cart";
 
 export const Cart = () => {
-  const { data: cart, isPending: cartIsLoading } = useQuery({
-    queryKey: ["cart"],
-    queryFn: () => getCart(),
-  });
+  const { data: cart } = useCart();
   return (
     <Sheet>
       <SheetTrigger asChild>
