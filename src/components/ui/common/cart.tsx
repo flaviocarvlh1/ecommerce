@@ -19,6 +19,7 @@ import CartItem from "./cart-item";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { Separator } from "@radix-ui/react-separator";
 import { useCart } from "@/action/hooks/queries/use-cart";
+import Link from "next/link";
 
 export const Cart = () => {
   const { data: cart } = useCart();
@@ -79,7 +80,9 @@ export const Cart = () => {
                 <p>{formatCentsToEUR(cart?.totalPriceInCents ?? 0)}</p>
               </div>
 
-              <Button className="mt-5 rounded-full">Finalizar compra</Button>
+              <Button className="mt-5 rounded-full" asChild>
+                <Link href="/cart/identification">Finalizar Compra</Link>
+              </Button>
             </div>
           )}
         </div>
