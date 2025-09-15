@@ -30,7 +30,7 @@ import { useUserAddresses } from "@/action/hooks/queries/use-user-addresses";
 import { CreateShippingAddressSchema } from "@/action/create-shipping-address/schema";
 
 const formSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
   recipientName: z.string().min(1),
   nif: z.string().min(9),
   telemovel: z.string().min(16),
@@ -138,7 +138,7 @@ const Addresses = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Identificação</CardTitle>
+        <CardTitle>Entregar:</CardTitle>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -277,12 +277,9 @@ const Addresses = ({
                       name="street"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Endereço</FormLabel>
+                          <FormLabel>Morada</FormLabel>
                           <FormControl>
-                            <Input
-                              placeholder="Digite seu endereço"
-                              {...field}
-                            />
+                            <Input placeholder="Digite sua morada" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
