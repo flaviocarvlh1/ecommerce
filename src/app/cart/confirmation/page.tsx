@@ -1,26 +1,26 @@
-import Footer from "@/components/ui/common/footer";
-import { Header } from "@/components/ui/common/header";
-import { db } from "@/db";
-import { shippingAddressTable } from "@/db/schema";
-import { auth } from "@/lib/auth";
-import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import CartSummary from "../components/cart-summary";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { db } from "@/db";
+import { auth } from "@/lib/auth";
+
+import CartSummary from "../components/cart-summary";
 import { formatAddress } from "../helpers/address";
-import { Button } from "@/components/ui/button";
+import FinishOrderButton from "./components/finish-order-button";
+import { Header } from "@/components/ui/common/header";
+import Footer from "@/components/ui/common/footer";
 
 const ConfirmationPage = async () => {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user?.id) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  if (!session?.user.id) {
     redirect("/");
   }
-
   const cart = await db.query.cartTable.findFirst({
     where: (cart, { eq }) => eq(cart.userId, session.user.id),
     with: {
-      shippingAddress: true, // ✅ inclui o endereço
+      shippingAddress: true,
       items: {
         with: {
           productVariant: {
@@ -32,47 +32,32 @@ const ConfirmationPage = async () => {
       },
     },
   });
-
-  if (!cart || cart.items.length === 0) {
+  if (!cart || cart?.items.length === 0) {
     redirect("/");
   }
-
-  const shippingAddresses = await db
-    .select()
-    .from(shippingAddressTable)
-    .where(eq(shippingAddressTable.userId, session.user.id));
-
-  const defaultShippingAddressId =
-    cart.shippingAddressId &&
-    shippingAddresses.some((addr) => addr.id === cart.shippingAddressId)
-      ? cart.shippingAddressId
-      : null;
-
   const cartTotalInCents = cart.items.reduce(
     (acc, item) => acc + item.productVariant.priceInCents * item.quantity,
     0,
   );
-
   if (!cart.shippingAddress) {
     redirect("/cart/identification");
   }
-
   return (
-    <>
+    <div>
       <Header />
       <div className="space-y-4 px-5">
-        <Card className="px-4">
+        <Card>
           <CardHeader>
-            <CardTitle>Identificação:</CardTitle>
+            <CardTitle>Identificação</CardTitle>
           </CardHeader>
-          <Card>
-            <CardContent>
-              <p className="text-sm">{formatAddress(cart.shippingAddress)}</p>
-            </CardContent>
-          </Card>
-          <Button className="w-full rounded-full" size="lg">
-            Confirmar compra
-          </Button>
+          <CardContent className="space-y-6">
+            <Card>
+              <CardContent>
+                <p className="text-sm">{formatAddress(cart.shippingAddress)}</p>
+              </CardContent>
+            </Card>
+            <FinishOrderButton />
+          </CardContent>
         </Card>
         <CartSummary
           subtotalInCents={cartTotalInCents}
@@ -90,7 +75,7 @@ const ConfirmationPage = async () => {
       <div className="mt-12">
         <Footer />
       </div>
-    </>
+    </div>
   );
 };
 
