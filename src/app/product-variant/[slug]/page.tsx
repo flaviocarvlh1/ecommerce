@@ -58,7 +58,6 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
         </div>
 
         <div className="px-5">
-          {/* DESCRIÇÃO */}
           <h2 className="text-lg font-semibold">
             {productVariant.product.name}
           </h2>

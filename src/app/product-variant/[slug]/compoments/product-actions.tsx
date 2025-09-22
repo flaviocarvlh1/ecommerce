@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 import AddToCartButton from "./add-to-cart-button";
+import Link from "next/link";
 
 interface ProductActionsProps {
   productVariantId: string;
@@ -44,7 +45,7 @@ const ProductActions = ({ productVariantId }: ProductActionsProps) => {
           quantity={quantity}
         />
         <Button className="rounded-full" size="lg">
-          Comprar agora
+          <Link href="/cart/identification">Comprar Agora</Link>
         </Button>
       </div>
     </>
