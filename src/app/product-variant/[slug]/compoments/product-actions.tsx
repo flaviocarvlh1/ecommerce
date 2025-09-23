@@ -44,9 +44,11 @@ const ProductActions = ({ productVariantId }: ProductActionsProps) => {
           productVariantId={productVariantId}
           quantity={quantity}
         />
-        <Button className="rounded-full" size="lg">
-          <Link href="/cart/identification">Comprar Agora</Link>
-        </Button>
+        <Link href="/cart/identification" passHref>
+          <Button className="rounded-full" size="lg">
+            Comprar Agora
+          </Button>
+        </Link>
       </div>
     </>
   );
