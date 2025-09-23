@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 
 import AddToCartButton from "./add-to-cart-button";
 import Link from "next/link";
+import router from "next/router";
 
 interface ProductActionsProps {
   productVariantId: string;
@@ -44,11 +45,13 @@ const ProductActions = ({ productVariantId }: ProductActionsProps) => {
           productVariantId={productVariantId}
           quantity={quantity}
         />
-        <Link href="/cart/identification" passHref>
-          <Button className="rounded-full" size="lg">
-            Comprar Agora
-          </Button>
-        </Link>
+        <Button
+          className="rounded-full"
+          size="lg"
+          onClick={() => router.push("/cart/identification")}
+        >
+          Comprar Agora
+        </Button>
       </div>
     </>
   );
