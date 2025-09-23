@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 import AddToCartButton from "./add-to-cart-button";
-import { useRouter } from "next/navigation"; // <-- Import correto
+import Link from "next/link";
 
 interface ProductActionsProps {
   productVariantId: string;
@@ -14,7 +14,6 @@ interface ProductActionsProps {
 
 const ProductActions = ({ productVariantId }: ProductActionsProps) => {
   const [quantity, setQuantity] = useState(1);
-  const router = useRouter(); // <-- hook do App Router
 
   const handleDecrement = () => {
     setQuantity((prev) => (prev > 1 ? prev - 1 : prev));
@@ -45,13 +44,11 @@ const ProductActions = ({ productVariantId }: ProductActionsProps) => {
           productVariantId={productVariantId}
           quantity={quantity}
         />
-        <Button
-          className="rounded-full"
-          size="lg"
-          onClick={() => router.push("/cart/identification")} // <-- navegação correta
-        >
-          Comprar Agora
-        </Button>
+        <Link href="/cart/identification" passHref>
+          <Button asChild className="rounded-full" size="lg">
+            <a>Comprar Agora</a>
+          </Button>
+        </Link>
       </div>
     </>
   );
