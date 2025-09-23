@@ -19,7 +19,6 @@ import { Header } from "@/components/ui/common/header";
 const Authentication = () => {
   return (
     <>
-      <Header />
       <div className="flex w-full flex-col gap-6 p-5">
         <Tabs defaultValue="sign-in">
           <TabsList>

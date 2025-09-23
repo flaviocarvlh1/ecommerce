@@ -39,7 +39,6 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
   });
   return (
     <>
-      <Header />
       <div className="flex flex-col space-y-6">
         <Image
           src={productVariant.imageUrl}
@@ -47,7 +46,7 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
           sizes="100vw"
           height={0}
           width={0}
-          className="h-auto w-full object-cover"
+          className="h-auto w-full object-cover lg:-mr-10 lg:-ml-10 lg:h-[700px] lg:w-[200%] lg:object-contain"
         />
 
         <div className="px-5">

@@ -1,11 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ShoppingBasketIcon } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-
 import { getCart } from "@/action/get-cart";
 import {
   Sheet,
@@ -19,12 +20,19 @@ import CartItem from "./cart-item";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { Separator } from "@radix-ui/react-separator";
 import { useCart } from "@/action/hooks/queries/use-cart";
-import Link from "next/link";
 
 export const Cart = () => {
   const { data: cart } = useCart();
+  const [open, setOpen] = useState(false);
+  const router = useRouter();
+
+  const handleCheckout = () => {
+    setOpen(false);
+    router.push("/cart/identification");
+  };
+
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="outline" size="icon">
           <ShoppingBasketIcon />
@@ -60,28 +68,23 @@ export const Cart = () => {
           {cart?.items && cart?.items.length > 0 && (
             <div className="flex flex-col gap-4">
               <Separator />
-
               <div className="flex items-center justify-between text-xs font-medium">
                 <p>Subtotal</p>
                 <p>{formatCentsToEUR(cart?.totalPriceInCents ?? 0)}</p>
               </div>
-
               <Separator />
-
               <div className="flex items-center justify-between text-xs font-medium">
                 <p>Entrega</p>
                 <p>GRÁTIS</p>
               </div>
-
               <Separator />
-
               <div className="flex items-center justify-between text-xs font-medium">
                 <p>Total</p>
                 <p>{formatCentsToEUR(cart?.totalPriceInCents ?? 0)}</p>
               </div>
 
-              <Button className="mt-5 rounded-full" asChild>
-                <Link href="/cart/identification">Finalizar Compra</Link>
+              <Button className="mt-5 rounded-full" onClick={handleCheckout}>
+                Finalizar Compra
               </Button>
             </div>
           )}

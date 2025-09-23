@@ -16,7 +16,6 @@ import {
 const CheckoutSuccessPage = () => {
   return (
     <>
-      <Header />
       <Dialog open={true} onOpenChange={() => {}}>
         <DialogContent className="text-center">
           <Image

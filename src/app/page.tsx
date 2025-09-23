@@ -15,26 +15,27 @@ const Home = async () => {
       variants: true,
     },
   });
+
   const newlyCreatedProducts = await db.query.productTable.findMany({
     orderBy: [desc(productTable.createdAt)],
     with: {
       variants: true,
     },
   });
+
   const categories = await db.query.categoryTable.findMany({});
 
   return (
     <>
-      <Header />
       <div className="space-y-6">
-        <div className="px-5">
+        <div className="px-5 lg:px-0">
           <Image
             src="/banner01.png"
             alt="Leve uma vida com estilo"
             height={0}
             width={0}
             sizes="100vw"
-            className="h-auto w-full"
+            className="h-auto w-full rounded-xl lg:-mr-10 lg:-ml-10 lg:h-[700px] lg:w-[200%] lg:object-contain"
           />
         </div>
 
@@ -48,18 +49,19 @@ const Home = async () => {
           <CategorySelector categories={categories} />
         </div>
 
-        <div className="px-5">
+        <div className="px-5 lg:px-0">
           <Image
             src="/banner02.png"
             alt="Leve uma vida com estilo"
             height={0}
             width={0}
             sizes="100vw"
-            className="h-auto w-full"
+            className="h-auto w-full rounded-xl lg:-mr-10 lg:-ml-10 lg:h-[700px] lg:w-[200%] lg:object-contain"
           />
         </div>
 
         <ProductList products={newlyCreatedProducts} title="Novos produtos" />
+
         <Footer />
       </div>
     </>

@@ -32,7 +32,6 @@ const MyOrdersPage = async () => {
 
   return (
     <>
-      <Header />
       <div className="px-5">
         <Orders
           orders={orders.map((order) => ({

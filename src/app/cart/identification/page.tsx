@@ -53,7 +53,6 @@ const IdentificationPage = async () => {
 
   return (
     <div>
-      <Header />
       <div className="space-y-4 px-5">
         <Addresses
           shippingAddresses={shippingAddresses || []}
@@ -72,6 +71,7 @@ const IdentificationPage = async () => {
           }))}
         />
       </div>
+
       <div className="mt-12">
         <Footer />
       </div>
