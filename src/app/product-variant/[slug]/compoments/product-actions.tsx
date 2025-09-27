@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Loader2, MinusIcon, PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AddToCartButton from "./add-to-cart-button";
+import Link from "next/link";
 
 interface ProductActionsProps {
   productVariantId: string;
@@ -25,11 +26,6 @@ const ProductActions = ({
 
   const handleIncrement = () => setQuantity((prev) => prev + 1);
   const handleDecrement = () => setQuantity((prev) => Math.max(1, prev - 1));
-
-  const handleBuyNow = async () => {
-    setIsBuying(true);
-    setIsBuying(false);
-  };
 
   return (
     <div className="flex flex-col space-y-6 px-5">
@@ -58,15 +54,11 @@ const ProductActions = ({
           productVariantPriceInCents={productVariantPriceInCents}
         />
 
-        <Button
-          className="rounded-full"
-          size="lg"
-          onClick={handleBuyNow}
-          disabled={isBuying}
-        >
-          {isBuying && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Comprar Agora
-        </Button>
+        <Link href="/cart/identification">
+          <Button className="w-full rounded-full" size="lg">
+            Comprar Agora
+          </Button>
+        </Link>
       </div>
     </div>
   );
