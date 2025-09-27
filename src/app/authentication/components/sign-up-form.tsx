@@ -20,12 +20,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { error } from "console";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-
+import { useCartStore } from "@/action/hooks/use-cart-store";
+import { migrateGuestCart } from "@/action/migrate-guest-cart/migrate-guest-cart";
 const formSchema = z
   .object({
     nome: z.string("Nome inválido!").trim().min(2, "Nome é Obrigatório"),
@@ -42,6 +42,9 @@ type FormValues = z.infer<typeof formSchema>;
 
 const SignUpForm = () => {
   const router = useRouter();
+  const guestItems = useCartStore((state) => state.items);
+  const clearCart = useCartStore((state) => state.clearCart);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -58,7 +61,24 @@ const SignUpForm = () => {
       password: values.password,
       name: values.nome,
       fetchOptions: {
-        onSuccess: () => {
+        onSuccess: async () => {
+          if (guestItems.length > 0) {
+            try {
+              await migrateGuestCart(
+                guestItems.map((item) => ({
+                  productVariantId: item.productVariantId,
+                  quantity: item.quantity,
+                })),
+              );
+
+              clearCart();
+              toast.success("Carrinho migrado com sucesso!");
+            } catch (error) {
+              console.error("Erro ao migrar carrinho:", error);
+              toast.error("Erro ao migrar carrinho, mas cadastro realizado.");
+            }
+          }
+
           router.push("/");
         },
         onError: (error) => {

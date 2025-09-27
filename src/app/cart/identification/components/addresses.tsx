@@ -122,7 +122,7 @@ const Addresses = ({
         shippingAddressId: selectedAddress,
       });
       toast.success("Morada selecionada para entrega!");
-      router.push("/cart/confirmation");
+      router.push("/checkout");
     } catch (error) {
       toast.error("Erro ao selecionar morada. Tente novamente.");
       console.error(error);

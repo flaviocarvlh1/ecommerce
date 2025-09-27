@@ -3,7 +3,6 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import Footer from "@/components/ui/common/footer";
-import { Header } from "@/components/ui/common/header";
 import ProductList from "@/components/ui/common/product-list";
 import { db } from "@/db";
 import { productTable, productVariantTable } from "@/db/schema";
@@ -11,6 +10,7 @@ import { formatCentsToEUR } from "@/helpers/money";
 
 import ProductActions from "./compoments/product-actions";
 import VariantSelector from "./compoments/variant-selector";
+import AddToCartButton from "./compoments/add-to-cart-button";
 
 interface ProductVariantPageProps {
   params: Promise<{ slug: string }>;
@@ -68,7 +68,16 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
           </h3>
         </div>
 
-        <ProductActions productVariantId={productVariant.id} />
+        <div className="px-5">
+          <AddToCartButton
+            productVariantId={productVariant.id}
+            quantity={1}
+            productName={productVariant.product.name}
+            productVariantName={productVariant.name}
+            productVariantImageUrl={productVariant.imageUrl}
+            productVariantPriceInCents={productVariant.priceInCents}
+          />
+        </div>
 
         <div className="px-5">
           <p className="text-shadow-amber-600">

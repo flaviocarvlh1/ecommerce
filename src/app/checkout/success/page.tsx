@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-
+import { useEffect } from "react";
 import { Header } from "@/components/ui/common/header";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,8 +12,23 @@ import {
   DialogFooter,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useCartStore } from "@/action/hooks/use-cart-store";
+import { useQueryClient } from "@tanstack/react-query";
 
 const CheckoutSuccessPage = () => {
+  const clearCart = useCartStore((state) => state.clearCart);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    // Limpar carrinho quando a página carregar
+    clearCart();
+
+    // Invalidar query do carrinho para refletir vazio
+    queryClient.invalidateQueries({ queryKey: ["cart"] });
+
+    console.log("Carrinho limpo após compra!");
+  }, [clearCart, queryClient]);
+
   return (
     <>
       <Dialog open={true} onOpenChange={() => {}}>
@@ -28,7 +43,7 @@ const CheckoutSuccessPage = () => {
           <DialogTitle className="mt-4 text-2xl">Pedido efetuado!</DialogTitle>
           <DialogDescription className="font-medium">
             Seu pedido foi efetuado com sucesso. Você pode acompanhar o status
-            na seção de “Meus Pedidos”.
+            na seção de "Meus Pedidos".
           </DialogDescription>
 
           <DialogFooter>

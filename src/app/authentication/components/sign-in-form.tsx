@@ -26,6 +26,8 @@ import { z } from "zod";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useCartStore } from "@/action/hooks/use-cart-store";
+import { migrateGuestCart } from "@/action/migrate-guest-cart/migrate-guest-cart";
 
 const formSchema = z.object({
   email: z.email("E-mail Inválido!"),
@@ -33,8 +35,12 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
-const SignInform = () => {
+
+const SignInForm = () => {
   const router = useRouter();
+  const guestItems = useCartStore((state) => state.items);
+  const clearCart = useCartStore((state) => state.clearCart);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -48,7 +54,24 @@ const SignInform = () => {
       email: values.email,
       password: values.password,
       fetchOptions: {
-        onSuccess: () => {
+        onSuccess: async () => {
+          if (guestItems.length > 0) {
+            try {
+              await migrateGuestCart(
+                guestItems.map((item) => ({
+                  productVariantId: item.productVariantId,
+                  quantity: item.quantity,
+                })),
+              );
+
+              clearCart();
+              toast.success("Carrinho migrado com sucesso!");
+            } catch (error) {
+              console.error("Erro ao migrar carrinho:", error);
+              toast.error("Erro ao migrar carrinho, mas login realizado.");
+            }
+          }
+
           router.push("/");
         },
         onError: (ctx) => {
@@ -73,7 +96,7 @@ const SignInform = () => {
     });
   }
 
-  const handleSingInWithGoogle = async () => {
+  const handleSignInWithGoogle = async () => {
     await authClient.signIn.social({
       provider: "google",
     });
@@ -127,7 +150,7 @@ const SignInform = () => {
               <Button
                 variant="outline"
                 className="w-full"
-                onClick={handleSingInWithGoogle}
+                onClick={handleSignInWithGoogle}
                 type="button"
               >
                 <svg viewBox="0 0 24 24" className="h-4 w-4">
@@ -158,4 +181,4 @@ const SignInform = () => {
   );
 };
 
-export default SignInform;
+export default SignInForm;

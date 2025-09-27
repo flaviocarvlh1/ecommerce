@@ -1,13 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { ShoppingBasketIcon } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { getCart } from "@/action/get-cart";
 import {
   Sheet,
   SheetContent,
@@ -20,16 +17,35 @@ import CartItem from "./cart-item";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { Separator } from "@radix-ui/react-separator";
 import { useCart } from "@/action/hooks/queries/use-cart";
+import { GuestCartItem } from "./guest-cart-item";
+import { useCartStore, useIsGuest } from "@/action/hooks/use-cart-store";
 
 export const Cart = () => {
-  const { data: cart } = useCart();
+  const { data: userCart } = useCart();
+  const guestCartItems = useCartStore((state) => state.items);
+  const guestTotalPrice = useCartStore((state) => state.getTotalPrice());
+  const isGuest = useIsGuest();
+
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
+  const cart = isGuest
+    ? {
+        items: guestCartItems,
+        totalPriceInCents: guestTotalPrice,
+      }
+    : userCart;
+
   const handleCheckout = () => {
     setOpen(false);
-    router.push("/cart/identification");
+    if (isGuest) {
+      router.push("/authentication");
+    } else {
+      router.push("/cart/identification");
+    }
   };
+
+  const isEmpty = !cart?.items || cart.items.length === 0;
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -47,25 +63,49 @@ export const Cart = () => {
           <div className="flex h-full max-h-full flex-col overflow-hidden">
             <ScrollArea className="h-full">
               <div className="flex h-full flex-col gap-8">
-                {cart?.items.map((item) => (
-                  <CartItem
-                    key={item.id}
-                    id={item.id}
-                    productVariantId={item.productVariant.id}
-                    productName={item.productVariant.product.name}
-                    productVariantName={item.productVariant.name}
-                    productVariantImageUrl={item.productVariant.imageUrl}
-                    productVariantPriceInCents={
-                      item.productVariant.priceInCents
-                    }
-                    quantity={item.quantity}
-                  />
-                ))}
+                {isEmpty ? (
+                  <div className="flex h-full items-center justify-center">
+                    <p className="text-muted-foreground">Carrinho vazio</p>
+                  </div>
+                ) : (
+                  <>
+                    {isGuest &&
+                      guestCartItems.map((item) => (
+                        <GuestCartItem
+                          key={item.productVariantId}
+                          productVariantId={item.productVariantId}
+                          productName={item.productName}
+                          productVariantName={item.productVariantName}
+                          productVariantImageUrl={item.productVariantImageUrl}
+                          productVariantPriceInCents={
+                            item.productVariantPriceInCents
+                          }
+                          quantity={item.quantity}
+                        />
+                      ))}
+
+                    {!isGuest &&
+                      userCart?.items?.map((item) => (
+                        <CartItem
+                          key={item.id}
+                          id={item.id}
+                          productVariantId={item.productVariant.id}
+                          productName={item.productVariant.product.name}
+                          productVariantName={item.productVariant.name}
+                          productVariantImageUrl={item.productVariant.imageUrl}
+                          productVariantPriceInCents={
+                            item.productVariant.priceInCents
+                          }
+                          quantity={item.quantity}
+                        />
+                      ))}
+                  </>
+                )}
               </div>
             </ScrollArea>
           </div>
 
-          {cart?.items && cart?.items.length > 0 && (
+          {!isEmpty && (
             <div className="flex flex-col gap-4">
               <Separator />
               <div className="flex items-center justify-between text-xs font-medium">
@@ -84,8 +124,14 @@ export const Cart = () => {
               </div>
 
               <Button className="mt-5 rounded-full" onClick={handleCheckout}>
-                Finalizar Compra
+                {isGuest ? "Fazer Login para Continuar" : "Finalizar Compra"}
               </Button>
+
+              {isGuest && (
+                <p className="text-muted-foreground text-center text-xs">
+                  Seus itens serão salvos automaticamente
+                </p>
+              )}
             </div>
           )}
         </div>
